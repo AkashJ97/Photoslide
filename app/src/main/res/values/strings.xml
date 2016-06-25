@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Photoslide</string>
+    <string name="slideshow">SLIDESHOW</string>
+    <string name="play">PLAY</string>
+    <string name="stop">STOP</string>
+
+
+    <string-array name="Track">
+        <item>Cars</item>
+        <item>Bikes</item>
+
+    </string-array>
+</resources>
