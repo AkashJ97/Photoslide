@@ -34,7 +34,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
     Button en, dis;
     int j = 0;
     MediaPlayer song;
-    boolean playing = false;
+    boolean isplaying = false;
 
 
     int[] carArray = {R.drawable.car_1, R.drawable.car_2, R.drawable.car_3, R.drawable.car_4, R.drawable.car_5, R.drawable.car_6, R.drawable.car_7, R.drawable.car_8};
@@ -152,38 +152,38 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 
         if (txtFromSpinner.equals("Track 1")) {
 
-            if(playing)
+            if(isplaying)
                 song.reset();
             song = MediaPlayer.create(getApplicationContext(), R.raw.games_of_thrones);
             song.start();
-            playing = true;
+            isplaying = true;
 
 
         } else if (txtFromSpinner.equals("Track 2")) {
 
-            if(playing)
+            if(isplaying)
                 song.reset();
             song = MediaPlayer.create(getApplicationContext(), R.raw.kabali_theme_ringtone);
             song.start();
-            playing = true;
+            isplaying = true;
 
 
         } else if (txtFromSpinner.equals("Track 3")) {
 
-            if(playing)
+            if(isplaying)
                 song.reset();
             song = MediaPlayer.create(getApplicationContext(), R.raw.see_you_again);
             song.start();
-            playing = true;
+            isplaying = true;
 
 
         } else {
 
-            if(playing)
+            if(isplaying)
                song.reset();
             song = MediaPlayer.create(getApplicationContext(), R.raw.super_ringtone);
             song.start();
-            playing = true;
+            isplaying = true;
 
 
         }
