@@ -2,10 +2,12 @@ package org.world.asa.photoslide;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaPlayer;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,27 +19,26 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-public class MainActivity extends Activity implements AdapterView.OnItemSelectedListener , SensorEventListener{
+public class MainActivity extends Activity implements AdapterView.OnItemSelectedListener , SensorEventListener {
 
 
     Handler mHandler = new Handler();
     long startTime;
     long elapsedTime;
-    String minutes, seconds ,txtFromSpinner;
+    String minutes, seconds, txtFromSpinner;
     long secs, mins;
-    boolean stopped = false;
     ImageView img;
     Spinner tra;
     SensorManager s;
     Sensor prox;
-    Button en , dis ;
-    int j=0;
+    Button en, dis;
+    int j = 0;
+    MediaPlayer song;
+    boolean playing = false;
 
 
+    int[] carArray = {R.drawable.car_1, R.drawable.car_2, R.drawable.car_3, R.drawable.car_4, R.drawable.car_5, R.drawable.car_6, R.drawable.car_7, R.drawable.car_8};
 
-
-    int []carArray={R.drawable.car_1,R.drawable.car_2,R.drawable.car_3,R.drawable.car_4,R.drawable.car_5,R.drawable.car_6,R.drawable.car_7,R.drawable.car_8};
-    int []bikeArray={R.drawable.bike_1,R.drawable.bike_2,R.drawable.bike_3,R.drawable.bike_4,R.drawable.bike_5};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +50,10 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
         tra.setAdapter(adapter);
         tra.setOnItemSelectedListener(this);
 
+        dis = (Button) findViewById(R.id.disable);
+        dis.setClickable(false);
+
+
 
     }
 
@@ -56,30 +61,13 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         txtFromSpinner = tra.getSelectedItem().toString();
-        img=(ImageView)findViewById(R.id.imageView2);
-        if(txtFromSpinner.equals("Cars")) {
-            img.setImageResource(carArray[0]);
-            mHandler.removeCallbacks(runbikes);
-            mHandler.removeCallbacks(runcars);
-            mHandler.removeCallbacks(startTimer);
-
-        }
-        else {
-            img.setImageResource(bikeArray[0]);
-
-            img.setImageResource(carArray[0]);
-            mHandler.removeCallbacks(runcars);
-            mHandler.removeCallbacks(runbikes);
-            mHandler.removeCallbacks(startTimer);
-
-        }
 
 
     }
+
     public void onNothingSelected(AdapterView<?> arg0) {
         // TODO Auto-generated method stub
     }
-
 
 
     private void updateTimer(float time) {
@@ -103,7 +91,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
             minutes = "0" + minutes;
         }
 
-        ((TextView) findViewById(R.id.timer)).setText( minutes + " : " + seconds);
+        ((TextView) findViewById(R.id.timer)).setText(minutes + " : " + seconds);
 
     }
 
@@ -128,119 +116,98 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
             {
 
                 mHandler.removeCallbacks(runcars);
-                mHandler.removeCallbacks(runbikes);
                 mHandler.removeCallbacks(startTimer);
             }
         }
     };
-
-    Runnable runbikes = new Runnable() {
-        int i=0;
-        public void run() {
-
-            if(i<bikeArray.length) {
-                img.setImageResource(bikeArray[i]);
-                i++;
-                mHandler.postDelayed(this, 3000);
-            }
-            else
-            {
-
-                mHandler.removeCallbacks(runcars);
-                mHandler.removeCallbacks(runbikes);
-                mHandler.removeCallbacks(startTimer);
-            }
-        }
-    };
-
-
-
-
-
-
 
 
     public void slideShowClick(View view) {
 
-        img=(ImageView)findViewById(R.id.imageView2);
-        txtFromSpinner = tra.getSelectedItem().toString();
-        if(txtFromSpinner.equals("Cars")) {
+        img = (ImageView) findViewById(R.id.imageView2);
 
-            startTime = System.currentTimeMillis();
 
-            mHandler.removeCallbacks(startTimer);
-            mHandler.postDelayed(startTimer, 10);
+        startTime = System.currentTimeMillis();
 
-            mHandler.removeCallbacks(runcars);
-            mHandler.postDelayed(runcars, 0);
-        }
-        else
-        {
+        mHandler.removeCallbacks(startTimer);
+        mHandler.postDelayed(startTimer, 10);
 
-            startTime = System.currentTimeMillis();
-
-            mHandler.removeCallbacks(startTimer);
-            mHandler.postDelayed(startTimer, 10);
-
-            mHandler.removeCallbacks(runbikes);
-            mHandler.postDelayed(runbikes, 0);
-        }
+        mHandler.removeCallbacks(runcars);
+        mHandler.postDelayed(runcars, 0);
 
 
     }
 
 
-
-
     public void stopClick(View view) {
 
+        song.stop();
+        song.reset();
 
-        mHandler.removeCallbacks(startTimer);
-        txtFromSpinner = tra.getSelectedItem().toString();
-        stopped = true;
-        mHandler.removeCallbacks(runcars);
-        mHandler.removeCallbacks(runbikes);
 
     }
 
     public void playClick(View view) {
 
 
-        img=(ImageView)findViewById(R.id.imageView2);
-        if(txtFromSpinner.equals("Cars")) {
-            startTime = System.currentTimeMillis() - elapsedTime;
-            mHandler.postDelayed(runcars, 0 );
-            mHandler.postDelayed(startTimer, 10);
-        }
-        else
-        {
-            startTime = System.currentTimeMillis() - elapsedTime;
-            mHandler.postDelayed(runbikes, 3000);
-            mHandler.postDelayed(startTimer, 10);
+        if (txtFromSpinner.equals("Track 1")) {
+
+            if(playing)
+                song.reset();
+            song = MediaPlayer.create(getApplicationContext(), R.raw.games_of_thrones);
+            song.start();
+            playing = true;
+
+
+        } else if (txtFromSpinner.equals("Track 2")) {
+
+            if(playing)
+                song.reset();
+            song = MediaPlayer.create(getApplicationContext(), R.raw.kabali_theme_ringtone);
+            song.start();
+            playing = true;
+
+
+        } else if (txtFromSpinner.equals("Track 3")) {
+
+            if(playing)
+                song.reset();
+            song = MediaPlayer.create(getApplicationContext(), R.raw.see_you_again);
+            song.start();
+            playing = true;
+
+
+        } else {
+
+            if(playing)
+               song.reset();
+            song = MediaPlayer.create(getApplicationContext(), R.raw.super_ringtone);
+            song.start();
+            playing = true;
+
+
         }
 
     }
 
     public void proximity(View v) {
 
-        en = (Button)findViewById(R.id.enable);
-        dis = (Button)findViewById(R.id.disable);
+        en = (Button) findViewById(R.id.enable);
+        dis = (Button) findViewById(R.id.disable);
 
-        if(v.getId() == R.id.enable)
-        {
-            j=0;
+        if (v.getId() == R.id.enable) {
+            j = 0;
             en.setClickable(false);
             dis.setClickable(true);
 
-            s = (SensorManager)getSystemService(SENSOR_SERVICE);
+            s = (SensorManager) getSystemService(SENSOR_SERVICE);
             prox = s.getDefaultSensor(Sensor.TYPE_PROXIMITY);
-            s.registerListener(this , prox , SensorManager.SENSOR_DELAY_NORMAL ) ;
+            s.registerListener(this, prox, SensorManager.SENSOR_DELAY_NORMAL);
 
 
         }
-        if(v.getId() == R.id.disable)
-        {
-            j=0;
+        if (v.getId() == R.id.disable) {
+            j = 0;
             dis.setClickable(false);
             en.setClickable(true);
             s.unregisterListener(this);
@@ -252,32 +219,17 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
     public void onSensorChanged(SensorEvent event) {
 
         if (event.values[0] == 0) {
-            if (txtFromSpinner.equals("Cars")) {
-                mHandler.removeCallbacks(runbikes);
-                mHandler.removeCallbacks(runcars);
-                mHandler.removeCallbacks(startTimer);
-                if (j < carArray.length) {
-                    img.setImageResource(carArray[j]);
-                    j++;
-                }
 
 
-            } else {
-                mHandler.removeCallbacks(runbikes);
-                mHandler.removeCallbacks(runcars);
-                mHandler.removeCallbacks(startTimer);
-                if (j < bikeArray.length) {
-                    img.setImageResource(bikeArray[j]);
-                    j++;
-                }
-
+            mHandler.removeCallbacks(startTimer);
+            if (j < carArray.length) {
+                img.setImageResource(carArray[j]);
+                j++;
             }
+
+
         }
-
     }
-
-
-
 
 
     @Override
@@ -285,3 +237,4 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 
     }
 }
+

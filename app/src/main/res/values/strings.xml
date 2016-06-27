@@ -6,8 +6,11 @@
 
 
     <string-array name="Track">
-        <item>Cars</item>
-        <item>Bikes</item>
+        <item>Track 1</item>
+        <item>Track 2</item>
+        <item>Track 3</item>
+        <item>Track 4</item>
+
 
     </string-array>
 </resources>
