@@ -34,7 +34,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
     Button en, dis;
     int j = 0;
     MediaPlayer song;
-    boolean isplaying = false;
+    boolean isplaying , running = false;
 
 
     int[] carArray = {R.drawable.car_1, R.drawable.car_2, R.drawable.car_3, R.drawable.car_4, R.drawable.car_5, R.drawable.car_6, R.drawable.car_7, R.drawable.car_8};
@@ -93,6 +93,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 
         ((TextView) findViewById(R.id.timer)).setText(minutes + " : " + seconds);
 
+
     }
 
     Runnable startTimer = new Runnable() {
@@ -125,12 +126,13 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
     public void slideShowClick(View view) {
 
         img = (ImageView) findViewById(R.id.imageView2);
+        running = true ;
 
 
         startTime = System.currentTimeMillis();
 
         mHandler.removeCallbacks(startTimer);
-        mHandler.postDelayed(startTimer, 10);
+        mHandler.postDelayed(startTimer, 0);
 
         mHandler.removeCallbacks(runcars);
         mHandler.postDelayed(runcars, 0);
@@ -141,9 +143,10 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 
     public void stopClick(View view) {
 
-        song.stop();
-        song.reset();
-
+       if(isplaying) {
+           song.stop();
+           song.reset();
+       }
 
     }
 
@@ -192,13 +195,16 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 
     public void proximity(View v) {
 
+
         en = (Button) findViewById(R.id.enable);
         dis = (Button) findViewById(R.id.disable);
 
         if (v.getId() == R.id.enable) {
-            j = 0;
+
             en.setClickable(false);
             dis.setClickable(true);
+            mHandler.removeCallbacks(startTimer);
+            mHandler.removeCallbacks(runcars);
 
             s = (SensorManager) getSystemService(SENSOR_SERVICE);
             prox = s.getDefaultSensor(Sensor.TYPE_PROXIMITY);
@@ -207,7 +213,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 
         }
         if (v.getId() == R.id.disable) {
-            j = 0;
+
             dis.setClickable(false);
             en.setClickable(true);
             s.unregisterListener(this);
@@ -222,6 +228,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 
 
             mHandler.removeCallbacks(startTimer);
+            j = j % carArray.length ;
             if (j < carArray.length) {
                 img.setImageResource(carArray[j]);
                 j++;
