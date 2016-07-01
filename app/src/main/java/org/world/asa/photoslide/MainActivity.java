@@ -32,9 +32,9 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
     SensorManager s;
     Sensor prox;
     Button en, dis;
-    int j = 0;
+    int i=0, j = 0;
     MediaPlayer song;
-    boolean isplaying , running = false;
+    boolean isplaying ;
 
 
     int[] carArray = {R.drawable.car_1, R.drawable.car_2, R.drawable.car_3, R.drawable.car_4, R.drawable.car_5, R.drawable.car_6, R.drawable.car_7, R.drawable.car_8};
@@ -100,12 +100,12 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
         public void run() {
             elapsedTime = System.currentTimeMillis() - startTime;
             updateTimer(elapsedTime);
-            mHandler.postDelayed(this, 10);
+            mHandler.postDelayed(this, 0);
         }
     };
 
     Runnable runcars = new Runnable() {
-        int i=0;
+
         public void run() {
 
             if(i<carArray.length) {
@@ -125,16 +125,18 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 
     public void slideShowClick(View view) {
 
+        i = 0;
+
         img = (ImageView) findViewById(R.id.imageView2);
-        running = true ;
 
-
-        startTime = System.currentTimeMillis();
-
-        mHandler.removeCallbacks(startTimer);
-        mHandler.postDelayed(startTimer, 0);
 
         mHandler.removeCallbacks(runcars);
+        mHandler.removeCallbacks(startTimer);
+        startTime = System.currentTimeMillis();
+
+        mHandler.postDelayed(startTimer, 0);
+
+
         mHandler.postDelayed(runcars, 0);
 
 
@@ -196,7 +198,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
     public void proximity(View v) {
 
 
-        en = (Button) findViewById(R.id.enable);
+        en  = (Button) findViewById(R.id.enable);
         dis = (Button) findViewById(R.id.disable);
 
         if (v.getId() == R.id.enable) {
@@ -208,7 +210,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 
             s = (SensorManager) getSystemService(SENSOR_SERVICE);
             prox = s.getDefaultSensor(Sensor.TYPE_PROXIMITY);
-            s.registerListener(this, prox, SensorManager.SENSOR_DELAY_NORMAL);
+            s.registerListener(this, prox , SensorManager.SENSOR_DELAY_NORMAL);
 
 
         }
